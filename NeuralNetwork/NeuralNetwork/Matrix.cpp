@@ -22,6 +22,13 @@ Matrix::Matrix(std::initializer_list< std::initializer_list<double> > list)
 			v[j - i->begin()][i - list.begin()] = *j;
 }
 
+Matrix::Matrix(Vector m)
+{
+	v.resize(1, std::vector<double>(m.size()));
+	for(int i = 0; i != m.size(); ++i)
+		v[0][i] = m[i];
+}
+
 Matrix::Matrix() {}
 
 int Matrix::width()
@@ -34,7 +41,7 @@ int Matrix::height()
 	return width() == 0 ? 0 : v[0].size();
 }
 
-Matrix Matrix::operator+(Matrix &m)
+Matrix Matrix::operator+(Matrix m)
 {
 	assert(width() == m.width());
 	assert(height() == m.height());
@@ -45,7 +52,7 @@ Matrix Matrix::operator+(Matrix &m)
 	return result;
 }
 
-Matrix Matrix::operator+=(Matrix &m)
+Matrix Matrix::operator+=(Matrix m)
 {
 	assert(width() == m.width());
 	assert(height() == m.height());
@@ -55,7 +62,7 @@ Matrix Matrix::operator+=(Matrix &m)
 	return *this;
 }
 
-Matrix Matrix::operator-(Matrix &m)
+Matrix Matrix::operator-(Matrix m)
 {
 
 	assert(width() == m.width());
@@ -67,7 +74,7 @@ Matrix Matrix::operator-(Matrix &m)
 	return result;
 }
 
-Matrix Matrix::operator-=(Matrix &m)
+Matrix Matrix::operator-=(Matrix m)
 {
 	assert(width() == m.width());
 	assert(height() == m.height());
@@ -77,7 +84,7 @@ Matrix Matrix::operator-=(Matrix &m)
 	return *this;
 }
 
-Matrix Matrix::operator*(Matrix &m)
+Matrix Matrix::operator*(Matrix m)
 {
 	assert(width() == m.height());
 	Matrix result(m.width(), height());
@@ -88,7 +95,7 @@ Matrix Matrix::operator*(Matrix &m)
 	return result;
 }
 
-Matrix Matrix::operator*=(Matrix &m)
+Matrix Matrix::operator*=(Matrix m)
 {
 	assert(width() == m.height());
 	Matrix result(m.width(), height());
@@ -101,7 +108,7 @@ Matrix Matrix::operator*=(Matrix &m)
 	return *this;
 }
 
-Matrix Matrix::operator*(int scalar)
+Matrix Matrix::operator*(double scalar)
 {
 	Matrix result(width(), height());
 	for (int i = 0; i != height(); ++i)
@@ -110,7 +117,7 @@ Matrix Matrix::operator*(int scalar)
 	return result;
 }
 
-Matrix Matrix::operator*=(int scalar)
+Matrix Matrix::operator*=(double scalar)
 {
 	for (int i = 0; i != height(); ++i)
 		for (int j = 0; j != width(); ++j)
@@ -123,10 +130,143 @@ std::vector<double>& Matrix::operator[](int i)
 	return v[i];
 }
 
-std::ostream& operator<<(std::ostream &os, Matrix &m)
+std::ostream& operator<<(std::ostream &os, Matrix m)
 {
+	os << "{\n";
 	for (int j = 0; j != m.height(); ++j)
+	{
+		os << "  ";
 		for (int i = 0; i != m.width(); ++i)
-			os << m[i][j] << " \n"[i == m.width() - 1];
-	return os;
+			os << m[i][j] << " ";
+		os << "\n";
+	}
+	return os << "}\n";
+}
+
+Vector::Vector(std::vector<double> m)
+{
+	v = m;
+}
+
+Vector::Vector(int x)
+{
+	v.resize(x);
+}
+
+Vector::Vector(std::initializer_list<double> list)
+{
+	v.resize(list.size());
+	for (auto i = list.begin(); i != list.end(); ++i)
+		v[i - list.begin()] = *i;
+}
+
+Vector::Vector(Matrix m)
+{
+	assert(m.height() == 1 || m.width() == 1);
+	if(m.width() == 1)
+		v = m[0];
+	else
+	{
+		v.resize(m.height());
+		for(int i = 0; i != m.width(); ++i)
+			v[i] = m[i][0];
+	}
+}
+
+Vector::Vector() {}
+
+int Vector::size()
+{
+	return v.size();
+}
+
+int Vector::width()
+{
+	return size();
+}
+
+int Vector::height()
+{
+	return size();
+}
+
+Vector Vector::operator+(Vector m)
+{
+	assert(size() == m.size());
+	Vector result(size());
+	for(int i = 0; i != size(); ++i)
+		result[i] = v[i] + m[i];
+	return result;
+}
+
+Vector Vector::operator+=(Vector m)
+{
+	assert(size() == m.size());
+	Vector result(size());
+	for(int i = 0; i != size(); ++i)
+		v[i] += m[i];
+	return *this;
+}
+
+Vector Vector::operator-(Vector m)
+{
+	assert(size() == m.size());
+	Vector result(size());
+	for(int i = 0; i != size(); ++i)
+		result[i] = v[i] - m[i];
+	return result;
+}
+
+Vector Vector::operator-=(Vector m)
+{
+	assert(size() == m.size());
+	Vector result(size());
+	for(int i = 0; i != size(); ++i)
+		v[i] -= m[i];
+	return *this;
+}
+
+double Vector::operator*(Vector m)
+{
+	assert(size() == m.size());
+	double result = 0;
+	for(int i = 0; i != size(); ++i)
+		result += v[i] * m[i];
+}
+
+Vector Vector::operator*(double scalar)
+{
+	Vector result(size());
+	for(int i = 0; i != size(); ++i)
+		result[i] = v[i] * scalar;
+	return result;
+}
+
+Vector Vector::operator*=(double scalar)
+{
+	for(int i = 0; i != size(); ++i)
+		v[i] *= scalar;
+}
+
+double& Vector::operator[](int i)
+{
+	return v[i];
+}
+
+std::vector<double>::iterator Vector::begin()
+{
+	return v.begin();
+}
+
+std::vector<double>::iterator Vector::end()
+{
+	return v.end();
+}
+
+std::ostream& operator<<(std::ostream &os, Vector m)
+{
+	os << "{ ";
+	for(int i = 0; i != m.size(); ++i)
+		os << m[i] << " ";
+	os << "}\n";
 }

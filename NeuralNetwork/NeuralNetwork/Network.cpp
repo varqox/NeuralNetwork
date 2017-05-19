@@ -5,12 +5,12 @@
 
 Network::Network()
 {
-	learning_rate = 0.5;
-	iterations = 1000;
+	learning_rate = 0.1;
+	iterations = 1000000;
 	hidden_units = 3;
 	input_size = 2;
-	examples = 5;
-	verticles_input_to_hidden = Matrix(hidden_units, input_size);
+	examples = 1000;
+	verticles_input_to_hidden = Matrix(input_size, hidden_units);
 	verticles_hidden_to_output = Vector(hidden_units);
 	srand(time(NULL));
 	for (int i = 0; i < verticles_input_to_hidden.width(); ++i)
@@ -18,10 +18,6 @@ Network::Network()
 			verticles_input_to_hidden[i][j] = random_from_0_to_1();
 	for (int i = 0; i < verticles_hidden_to_output.size(); ++i)
 		verticles_hidden_to_output[i] = random_from_0_to_1();
-	std::fstream file;
-	file.open("examples.txt", std::ios::in);
-	set_training_data(file);
-
 }
 
 double Network::f(double x)
@@ -57,53 +53,29 @@ double Network::random_from_0_to_1()
 }
 
 
-void Network::set_training_data(std::fstream &file)
+double Network::iterate(Vector input, double output)
 {
-	std::string line;
-	input = Matrix(input_size, examples);
-	target = Matrix(1, examples);
-	for (int i = 0; i < examples; ++i)
+	Vector hidden_layer_sum = verticles_input_to_hidden * input;
+	Vector hidden_layer_results = f(hidden_layer_sum);
+	double output_sum = hidden_layer_results * verticles_hidden_to_output;
+	double output_result = f(output_sum);
+	double margin_of_error = output - output_result;
+
+	double delta_output_sum = margin_of_error * f_derivative(output_sum);
+	Vector weights = hidden_layer_results * delta_output_sum;
+
+	for (int i = 0; i < hidden_units; ++i)
 	{
+		double delta_hidden_sum =
+			delta_output_sum
+			* verticles_hidden_to_output[i]
+			* f_derivative(hidden_layer_sum[i]);
+
 		for (int j = 0; j < input_size; ++j)
-			file >> input[j][i];
-		file >> target[i];
+			verticles_input_to_hidden[j][i] += delta_hidden_sum * input[j] * learning_rate;
 	}
-}
 
-void Network::iterate()
-{
-	hidden_layer_sum = input * verticles_input_to_hidden;
-	hidden_layer_results = f(hidden_layer_sum);
-	Vector output_sum = hidden_layer_results * verticles_hidden_to_output;
-	Vector output_result = f(output_sum);
-	Vector margin_of_error = target - output_result;
+	verticles_hidden_to_output += weights * learning_rate;
 
-	for (int i = 0; i < examples; ++i)
-	{
-		double delta_output_sum = margin_of_error[i] * f_derivative(output_sum[i]);
-		Vector weights = Vector(hidden_layer_results[i]) * delta_output_sum;
-		verticles_hidden_to_output += weights * learning_rate;
-
-		for (int j = 0; j < hidden_units; j++)
-		{
-			double delta_hidden_sum =
-				delta_output_sum
-				* verticles_hidden_to_output[j]
-				* f_derivative(hidden_layer_sum[i][j]);
-			for (int k = 0; k < input_size; k++)
-			{
-				verticles_input_to_hidden[j][k] += delta_output_sum * input[i][k] * learning_rate;
-			}
-		}
-	}
-}
-
-Matrix Network::get_input()
-{
-	return input;
-}
-
-Matrix Network::get_output()
-{
-	return target;
+	return margin_of_error;
 }

@@ -38,7 +38,7 @@ Vector::Vector() {}
 
 int Vector::size()
 {
-	return v.size();
+	return (int)v.size();
 }
 
 int Vector::width()
@@ -156,7 +156,7 @@ Matrix::Matrix(int x, int y)
 Matrix::Matrix(std::initializer_list< std::initializer_list<double> > list)
 {
 	assert(list.size() != 0);
-	v.resize(list.begin()->size(), Vector(list.size()));
+	v.resize(list.begin()->size(), Vector(int(list.size())));
 	for (auto i = list.begin(); i != list.end(); ++i)
 		for (auto j = i->begin(); j != i->end(); ++j)
 			v[j - i->begin()][i - list.begin()] = *j;
@@ -173,7 +173,7 @@ Matrix::Matrix() {}
 
 int Matrix::width()
 {
-	return v.size();
+	return (int)v.size();
 }
 
 int Matrix::height()

@@ -6,7 +6,7 @@
 Network::Network()
 {
 	learning_rate = 0.2;
-	iterations = 1000000;
+	iterations = 10000;
 	hidden_units = 3;
 	input_size = 2;
 	examples = 1000;
@@ -78,4 +78,12 @@ double Network::iterate(Vector input, double output)
 	verticles_hidden_to_output += weights * learning_rate;
 
 	return margin_of_error;
+}
+
+double Network::query(Vector input)
+{
+	Vector hidden_layer_sum = verticles_input_to_hidden * input;
+	Vector hidden_layer_results = f(hidden_layer_sum);
+	double output_sum = hidden_layer_results * verticles_hidden_to_output;
+	return f(output_sum);
 }

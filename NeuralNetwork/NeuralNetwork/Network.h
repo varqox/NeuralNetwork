@@ -16,6 +16,7 @@ public:
 	int iterations;
 	int input_size;
 	int examples;
+	double query(Vector input);
 
 private:
 	double learning_rate;

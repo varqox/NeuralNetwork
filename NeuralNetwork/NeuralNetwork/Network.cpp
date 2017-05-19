@@ -22,13 +22,13 @@ Network::Network()
 
 double Network::f(double x)
 {
-	return 1 / (1 + exp(-x));
+	return x / (1 + abs(x));
 }
 
 double Network::f_derivative(double x)
 {
-	double s = f(x);
-	return s * (1 - s);
+	double absx = abs(x);
+	return - x / (absx * (absx + 1) * (absx + 1));
 }
 
 Matrix Network::f(Matrix m)

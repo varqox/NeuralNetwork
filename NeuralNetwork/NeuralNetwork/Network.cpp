@@ -5,7 +5,7 @@
 
 Network::Network()
 {
-	learning_rate = 0.1;
+	learning_rate = 0.2;
 	iterations = 1000000;
 	hidden_units = 3;
 	input_size = 2;
@@ -28,7 +28,7 @@ double Network::f(double x)
 double Network::f_derivative(double x)
 {
 	double absx = abs(x);
-	return - x / (absx * (absx + 1) * (absx + 1));
+	return 1 / ((absx + 1) * (absx + 1));
 }
 
 Matrix Network::f(Matrix m)

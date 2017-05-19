@@ -9,7 +9,7 @@ int main()
 	Matrix tests(net.examples, net.input_size);
 	Vector target(net.examples); //512949324
 	std::fstream file;
-	file.open("examples.txt", std::ios::in);
+	file.open("examples", std::ios::in);
 	for (int i = 0; i < net.examples; ++i)
 	{
 		for (int j = 0; j < net.input_size; ++j)

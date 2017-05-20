@@ -229,8 +229,8 @@ Matrix Matrix::operator*(Matrix m)
 	assert(width() == m.height());
 	Matrix result(m.width(), height());
 	for (int i = 0; i != m.width(); ++i)
-		for (int j = 0; j != height(); ++j)
-			for (int k = 0; k != width(); ++k)
+		for (int k = 0; k != width(); ++k)
+			for (int j = 0; j != height(); ++j)
 				result[i][j] += v[k][j] * m[i][k];
 	return result;
 }
@@ -240,8 +240,8 @@ Matrix& Matrix::operator*=(Matrix m)
 	assert(width() == m.height());
 	Matrix result(m.width(), height());
 	for (int i = 0; i != m.width(); ++i)
-		for (int j = 0; j != height(); ++j)
-			for (int k = 0; k != width(); ++k)
+		for (int k = 0; k != width(); ++k)
+			for (int j = 0; j != height(); ++j)
 				result[i][j] += v[k][j] * m[i][k];
 
 	v = result.v;
